@@ -1,3 +1,8 @@
 - [x] setup update task item 
 - [x] setup remove task item 
-- [ ] try exploring clap and time features.
+- [ ] try exploring clap for reading commands and time features.
+- [ ] learn to store the data to database
+- [ ] learn how to build file as executable or application 
+- [ ] learn to build file to ship and program to execute from terminal by adding to path
+- [ ] Learn how to distribute file to other system users like windows & mac linux.\
+- [ ] explore how can we prepare it as crate and use into the other application.

@@ -38,3 +38,8 @@
  - crate like `serde` & `serde_json` to serialize vec data to string
  - how to save file in json format
  - last but not least borrowing & referencing.
+
+
+## Action item.
+
+[Task list to learn](./task.md)
