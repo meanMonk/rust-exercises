@@ -1,0 +1,19 @@
+{
+  "list": [
+    {
+      "description": "Make sure the Rust Cli TODO app works correctly!",
+      "completed": false,
+      "id": 1
+    },
+    {
+      "description": "Make sure the check uncheck should print correctly",
+      "completed": true,
+      "id": 2
+    },
+    {
+      "description": "Should save task to json file",
+      "completed": true,
+      "id": 3
+    }
+  ]
+}

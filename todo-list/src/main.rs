@@ -18,21 +18,28 @@
 
 // implement the trait todoAction.
 
-use std::{fs::File, io::{self, Write}, time::{SystemTime, UNIX_EPOCH}};
 use serde::Serialize;
+use std::{
+    fs::File,
+    io::{self, Write},
+    time::{SystemTime, UNIX_EPOCH},
+};
 
 trait TodoAction {
     fn add(&mut self, description: &str) -> bool;
+    fn update(&mut self, id: &str) -> Result<(), String>;
+    fn remove(&mut self, id: &str) -> bool;
+    fn save_to_file(&mut self) -> ();
 }
 
-#[derive(Debug,Serialize)]
+#[derive(Debug, Serialize)]
 struct TodoItem {
     description: String,
     completed: bool,
     id: u64,
 }
 
-#[derive(Debug,Serialize)]
+#[derive(Debug, Serialize)]
 struct Todo {
     list: Vec<TodoItem>,
 }
@@ -47,11 +54,17 @@ impl Todo {
 
     // function to list todo data.
     fn list(&self) {
+        println!("{:=^40}", " 📚 todo to focus 📚 ");
+        println!("");
+
         for todo in &self.list {
             let status = if todo.completed { '✅' } else { '❎' };
             println!("{status} {}", todo.description);
             println!("");
         }
+
+        println!("");
+        println!("{:=^40}", " 💚 thank you 💚 ");
     }
 }
 
@@ -67,7 +80,43 @@ impl TodoAction for Todo {
 
         true
     }
-    
+
+    fn update(&mut self, id: &str) -> Result<(), String> {
+        let _id: u64 = id.parse().expect("Please enter number valid number");
+
+        // use iter_mut to get the mutable ref and find to locate the item.
+
+        if let Some(_todo) = self.list.iter_mut().find(|x| x.id == _id) {
+            _todo.completed = !_todo.completed;
+            Ok(())
+        } else {
+            Err("Task not found!".to_string())
+        }
+    }
+
+    fn remove(&mut self, id: &str) -> bool {
+        let _id: u64 = id.parse().expect("Please enter number valid number");
+
+        let initial_len = self.list.len();
+
+        self.list.retain(|x| x.id != _id);
+
+        self.list.len() != initial_len
+    }
+
+    fn save_to_file(&mut self) {
+        println!("saving todo list to file!");
+        let time = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        let data = serde_json::to_string_pretty(self).expect("error while parsing!");
+        let file_name = format!("todo-{time}.json");
+        let mut file = File::create(&file_name).expect("failed create file!");
+        file.write_all(data.as_bytes())
+            .expect("failed to write to file");
+        println!("Cheers 🎉, Todo saved to file {file_name}!");
+    }
 }
 
 fn display_help() {
@@ -75,12 +124,12 @@ fn display_help() {
     println!("");
     println!("Please choose an action!");
     println!();
-    println!("📝Add New Todo        : Press `i`");
-    println!("✏️Edit Todo           : Press `e`");
-    println!("🗑️Remove Todo         : Press `d`");
-    println!("📋List Todos          : Press `p`");
-    println!("ℹ️Help Todo           : Press `h`");
-    println!("🔚Quit Todo           : Press `q`");
+    println!("Add New Todo      : Press `i`");
+    println!("Update Todo       : Press `u`");
+    println!("Remove Todo       : Press `d`");
+    println!("List Todos        : Press `p`");
+    println!("Help Todo         : Press `h`");
+    println!("Quit Todo         : Press `q`");
     println!();
     println!("---------------------------------------");
     println!("🎉 Welcome to Your Todo App! 🎉");
@@ -91,7 +140,7 @@ fn display_help() {
 
 enum TodoCommand {
     Add,
-    Edit,
+    Update,
     Remove,
     List,
     Help,
@@ -103,7 +152,7 @@ impl TodoCommand {
     fn from_input(input: &str) -> Option<TodoCommand> {
         match input {
             "i" => Some(TodoCommand::Add),
-            "e" => Some(TodoCommand::Edit),
+            "u" => Some(TodoCommand::Update),
             "d" => Some(TodoCommand::Remove),
             "p" => Some(TodoCommand::List),
             "h" => Some(TodoCommand::Help),
@@ -125,48 +174,40 @@ fn read_input() -> String {
     input.to_string()
 }
 
-
-
 pub fn todo_program() {
     let mut notes = Todo::new();
     loop {
         match TodoCommand::from_input(&read_input()) {
             Some(TodoCommand::Add) => {
-                println!("Enter new task below");
+                println!("What you wanna do ?");
                 notes.add(&read_input());
                 println!("i: new todo e: edit q: quit s:save");
             }
-            Some(TodoCommand::Edit) => {
-                println!("TodoCommand::Edit");
+            Some(TodoCommand::Update) => {
+                println!("Enter id of task to update!");
+                match notes.update(&read_input()) {
+                    Ok(_) => println!("Task updated successfully!"),
+                    Err(e) => println!("error occured {}", e),
+                }
                 println!("i: new todo e: edit q: quit s:save");
             }
             Some(TodoCommand::Remove) => {
-                println!("TodoCommand::Remove");
+                println!("Enter id of task to remove!");
+                if notes.remove(&read_input()) {
+                    println!("Task removed successfully!");
+                } else {
+                    println!("Failed to remove");
+                }
                 println!("i: new todo e: edit q: quit s:save");
             }
-            Some(TodoCommand::List) => {
-                println!("{:=^40}","📚 todo to focus");
-                println!("");
-                notes.list();
-                println!("");
-                println!("{:=^40}","💚 thank you 💚 ");
-            }
+            Some(TodoCommand::List) => notes.list(),
             Some(TodoCommand::Help) => {
                 display_help();
             }
             Some(TodoCommand::Quit) => {
-                println!("TodoCommand::Quit");
                 break;
             }
-            Some(TodoCommand::Save) => {
-                println!("saving todo list to file!");
-                let time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
-                let data = serde_json::to_string_pretty(&notes).expect("error while parsing!");
-                let file_name = format!("todo-{time}.json");
-                let mut file = File::create(&file_name).expect("failed create file!");
-                file.write_all(data.as_bytes()).expect("failed to write to file");
-                println!("Cheers 🎉, Todo saved to file {file_name}!");
-            }
+            Some(TodoCommand::Save) => notes.save_to_file(),
             None => {
                 println!("Invalid command!");
             }
@@ -176,8 +217,8 @@ pub fn todo_program() {
 }
 
 fn main() {
-    println!("📚 Note Taking App!");
-    println!("Add `h` for help or to learn more");
+    println!("🎉 Welcome to Your Note 📚 taking App! 🎉");
+    println!("--- Press `h` for help or to learn more");
 
     todo_program();
 }

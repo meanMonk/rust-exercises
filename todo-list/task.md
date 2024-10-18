@@ -1,0 +1,3 @@
+- [x] setup update task item 
+- [x] setup remove task item 
+- [ ] try exploring clap and time features.
