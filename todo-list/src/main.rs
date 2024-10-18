@@ -134,19 +134,22 @@ pub fn todo_program() {
             Some(TodoCommand::Add) => {
                 println!("Enter new task below");
                 notes.add(&read_input());
+                println!("i: new todo e: edit q: quit s:save");
             }
             Some(TodoCommand::Edit) => {
                 println!("TodoCommand::Edit");
+                println!("i: new todo e: edit q: quit s:save");
             }
             Some(TodoCommand::Remove) => {
                 println!("TodoCommand::Remove");
+                println!("i: new todo e: edit q: quit s:save");
             }
             Some(TodoCommand::List) => {
-                println!("📚 list item");
-                println!("--------");
+                println!("{:=^40}","📚 todo to focus");
+                println!("");
                 notes.list();
                 println!("");
-                println!("--------");
+                println!("{:=^40}","💚 thank you 💚 ");
             }
             Some(TodoCommand::Help) => {
                 display_help();
@@ -168,7 +171,7 @@ pub fn todo_program() {
                 println!("Invalid command!");
             }
         }
-        println!("i: new todo e: edit q: quit s:save");
+        println!("");
     }
 }
 
