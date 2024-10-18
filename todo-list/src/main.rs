@@ -18,6 +18,7 @@
 
 // implement the trait todoAction.
 
+use figlet_rs::FIGfont;
 use serde::Serialize;
 use std::{
     fs::File,
@@ -216,9 +217,16 @@ pub fn todo_program() {
     }
 }
 
-fn main() {
-    println!("🎉 Welcome to Your Note 📚 taking App! 🎉");
-    println!("--- Press `h` for help or to learn more");
+fn display_banner() {
+    let standard_font = FIGfont::standard().unwrap();
+    let figure = standard_font.convert("TODO APP");
+    assert!(figure.is_some());
+    println!("{}", figure.unwrap());
+}
 
+fn main() {
+    display_banner();
+    println!("🎉 Welcome to Note 🎉");
+    println!("--- Press `h` for help or to learn more");
     todo_program();
 }
