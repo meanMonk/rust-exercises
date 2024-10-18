@@ -18,21 +18,21 @@
 
 // implement the trait todoAction.
 
-use std::io;
+use std::{fs::File, io::{self, Write}, time::{SystemTime, UNIX_EPOCH}};
+use serde::Serialize;
 
 trait TodoAction {
     fn add(&mut self, description: &str) -> bool;
 }
 
-#[derive(Debug)]
-
+#[derive(Debug,Serialize)]
 struct TodoItem {
     description: String,
     completed: bool,
     id: u64,
 }
 
-#[derive(Debug)]
+#[derive(Debug,Serialize)]
 struct Todo {
     list: Vec<TodoItem>,
 }
@@ -67,22 +67,23 @@ impl TodoAction for Todo {
 
         true
     }
+    
 }
 
-fn print_help() {
+fn display_help() {
     println!("➡");
     println!("");
-    println!("Ref details to use with app!");
+    println!("Please choose an action!");
     println!();
-    println!("📝  **Add New Todo**        : Press `i`");
-    println!("✏️  **Edit Todo**           : Press `e`");
-    println!("🗑️  **Remove Todo**         : Press `d`");
-    println!("📋  **List Todos**          : Press `p`");
-    println!("ℹ️  **Help Todo**           : Press `h`");
-    println!("🔚  **Quit Todo**           : Press `q`");
+    println!("📝Add New Todo        : Press `i`");
+    println!("✏️Edit Todo           : Press `e`");
+    println!("🗑️Remove Todo         : Press `d`");
+    println!("📋List Todos          : Press `p`");
+    println!("ℹ️Help Todo           : Press `h`");
+    println!("🔚Quit Todo           : Press `q`");
     println!();
     println!("---------------------------------------");
-    println!("🎉 **Welcome to Your Todo App!** 🎉");
+    println!("🎉 Welcome to Your Todo App! 🎉");
     println!("Use the commands above to manage your tasks effortlessly.");
     println!("Have fun organizing your life!");
     println!();
@@ -113,21 +114,26 @@ impl TodoCommand {
     }
 }
 
-fn main() {
-    println!("📚 Note Taking App!");
-    println!("Add `h` for help or to learn more");
+// to read the input from cammand line
+fn read_input() -> String {
+    let mut user_inupt = String::new();
+    io::stdin()
+        .read_line(&mut user_inupt)
+        .expect("Failed to read input");
 
+    let input = user_inupt.trim();
+    input.to_string()
+}
+
+
+
+pub fn todo_program() {
+    let mut notes = Todo::new();
     loop {
-        let mut user_inupt = String::new();
-        io::stdin()
-            .read_line(&mut user_inupt)
-            .expect("Failed to read input");
-
-        let input = user_inupt.trim();
-
-        match TodoCommand::from_input(input) {
+        match TodoCommand::from_input(&read_input()) {
             Some(TodoCommand::Add) => {
-                println!("TodoCommand::Add");
+                println!("Enter new task below");
+                notes.add(&read_input());
             }
             Some(TodoCommand::Edit) => {
                 println!("TodoCommand::Edit");
@@ -136,22 +142,39 @@ fn main() {
                 println!("TodoCommand::Remove");
             }
             Some(TodoCommand::List) => {
-                println!("TodoCommand::List");
+                println!("📚 list item");
+                println!("--------");
+                notes.list();
+                println!("");
+                println!("--------");
             }
             Some(TodoCommand::Help) => {
-                print_help();
+                display_help();
             }
             Some(TodoCommand::Quit) => {
                 println!("TodoCommand::Quit");
                 break;
             }
             Some(TodoCommand::Save) => {
-                println!("TodoCommand::Save");
+                println!("saving todo list to file!");
+                let time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+                let data = serde_json::to_string_pretty(&notes).expect("error while parsing!");
+                let file_name = format!("todo-{time}.json");
+                let mut file = File::create(&file_name).expect("failed create file!");
+                file.write_all(data.as_bytes()).expect("failed to write to file");
+                println!("Cheers 🎉, Todo saved to file {file_name}!");
             }
             None => {
                 println!("Invalid command!");
             }
         }
+        println!("i: new todo e: edit q: quit s:save");
     }
+}
 
+fn main() {
+    println!("📚 Note Taking App!");
+    println!("Add `h` for help or to learn more");
+
+    todo_program();
 }
