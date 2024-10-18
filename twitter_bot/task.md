@@ -1,0 +1,6 @@
+- [ ] integrate twitter api.
+- [ ] check for handle mentions 
+- [ ] save the tweet info to json file. 
+- [ ] on request load the twitt info into printable pretty view.
+- [ ] represent the list of post 
+- [ ] save the post with respecttive to the user who has mention the item.
