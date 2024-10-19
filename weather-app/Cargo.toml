@@ -1,0 +1,9 @@
+[package]
+name = "weather-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4.38"
+figlet-rs = "0.1.5"
+table_print = "0.1.0"

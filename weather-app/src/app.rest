@@ -1,0 +1,7 @@
+# GET https://api.openweathermap.org/data/2.5/weather?q=pune&appid=204ab1cb37fbcb0e2e768d8c6eb75a3c
+# &units=metrics HTTP/1.1
+
+
+# GET https://api.openweathermap.org/data/2.5/weather?q=Pune&appid="204ab1cb37fbcb0e2e768d8c6eb75a3c" HTTP/1.1
+
+GET https://api.openweathermap.org/data/2.5/forecast/daily?q=Pune&appid=204ab1cb37fbcb0e2e768d8c6eb75a3c HTTP/1.1
