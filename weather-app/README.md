@@ -1,10 +1,8 @@
 # 🎉 Welcome to Weather App 🎉
 
 ## Working app demo
-![view](./demo.mov)
+[![image](./weatherapp.png)](./demo.mov)
 
-
-![image](./weatherapp.png)
 
 ## What we have learned.
 
