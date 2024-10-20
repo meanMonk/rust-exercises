@@ -1,9 +1,10 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-use std::{env, io};
+use std::{env, io::{self, stdout}, process::exit};
 
 use chrono::{DateTime, Local};
+use crossterm::{execute, terminal::{Clear, ClearType}};
 use dotenv::dotenv;
 use error_chain::error_chain;
 use serde::Deserialize;
@@ -64,6 +65,11 @@ struct Response {
     name: String,
 }
 
+// clear screen utility.
+fn clear_screen() {
+    execute!(stdout(), Clear(ClearType::All)).expect("failed to clear the screen!");
+}
+
 async fn load_weather_data(city: &str) -> Result<Response> {
     let api_key = env::var("WEATHER_API_KEY").expect("Unable to find api key!");
 
@@ -119,11 +125,16 @@ fn display_info(data: Response) {
     println!("");
 }
 
+fn print_title() {
+    println!("{:-^40}", " ");
+    println!("🎉 Welcome to Weather App 🎉");
+    println!("{:-^40}", " ");
+}
+
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-    println!("🎉 Welcome to Weather App 🎉");
-    println!("{:-^40}", " ");
+    print_title();
     loop {
         println!("Please enter city name : ");
         let mut city = String::new();
@@ -142,11 +153,16 @@ async fn main() {
         io::stdin()
             .read_line(&mut answer)
             .expect("unable to read answer");
-
-        if answer.trim() != "yes" {
+        
+        if "yes" == answer.trim().to_lowercase() {
+            clear_screen();
+            print!("\x1Bc");
+            print_title();
+        } else {
             println!("");
             println!("{:=^40}", " 💚 thank you 💚 ");
-            break;
+            exit(0);
         }
+        
     }
 }
