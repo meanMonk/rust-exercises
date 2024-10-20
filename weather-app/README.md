@@ -1,7 +1,11 @@
 # 🎉 Welcome to Weather App 🎉
 
 ## Working app demo
-[![image](./weatherapp.png)](./demo.mov)
+<!-- [video](./demo.mov) -->
+
+![image](./demo.gif)
+
+![image](./weatherapp.png)
 
 
 ## What we have learned.
